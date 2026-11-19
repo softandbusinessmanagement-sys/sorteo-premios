@@ -22,12 +22,7 @@ La política de seguridad permite que el público solo inserte registros. Leer, 
 
 ## Desplegar en Vercel
 
-Importa el repositorio de GitHub en Vercel y configura:
-
-- **Framework Preset:** Other
-- **Build Command:** `npm run build`
-- **Output Directory:** `dist`
-- **Environment Variables** (Production y Preview):
+Importa el repositorio de GitHub en Vercel. [`vercel.json`](./vercel.json) define el build (`npm run build`) y la carpeta de salida (`dist`). Añade estas variables para Production y Preview:
   - `SUPABASE_URL`: URL del proyecto Supabase.
   - `SUPABASE_ANON_KEY`: clave pública `anon` o `publishable` del proyecto.
 
