@@ -316,6 +316,31 @@
         element.setAttribute("role", "alert");
       }
 
+      function getAuthErrorMessage(error) {
+        const code = String(error?.code || "").toLowerCase();
+        const message = String(error?.message || "").toLowerCase();
+
+        if (code === "invalid_credentials" || message.includes("invalid login credentials")) {
+          return "Correo o contraseña incorrectos.";
+        }
+        if (code === "email_not_confirmed" || message.includes("email not confirmed")) {
+          return "El correo del organizador todavía no está confirmado.";
+        }
+        if (
+          code === "signup_disabled"
+          || code === "email_provider_disabled"
+          || message.includes("email signups are disabled")
+          || message.includes("email logins are disabled")
+          || message.includes("unsupported provider")
+        ) {
+          return "El inicio de sesión por correo está desactivado en Supabase. Activa el proveedor Email.";
+        }
+        if (code === "over_request_rate_limit" || message.includes("rate limit")) {
+          return "Demasiados intentos. Espera unos minutos antes de volver a intentar.";
+        }
+        return "No se pudo iniciar sesión. Verifica el correo, la contraseña y la configuración de Supabase.";
+      }
+
       function showAdmin() {
         loginView.hidden = true;
         adminView.hidden = false;
@@ -602,11 +627,12 @@
           submit.disabled = true;
           message.textContent = "Verificando acceso…";
           const { data, error } = await client.auth.signInWithPassword({
-            email: form.elements.email.value.trim(),
+            email: form.elements.email.value.trim().toLowerCase(),
             password: form.elements.password.value
           });
           if (error) {
-            showError(message, "No se pudo iniciar sesión. Revisa tus datos e inténtalo de nuevo.");
+            console.error("Error al iniciar sesión.", error);
+            showError(message, getAuthErrorMessage(error));
             submit.disabled = false;
             return;
           }
